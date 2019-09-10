@@ -129,8 +129,6 @@
  * from the devices are:
  *
  *	void add_device_randomness(const void *buf, unsigned int size);
- * 	void add_input_randomness(unsigned int type, unsigned int code,
- *                                unsigned int value);
  *	void add_interrupt_randomness(int irq, int irq_flags);
  * 	void add_disk_randomness(struct gendisk *disk);
  *
@@ -141,9 +139,6 @@
  * pool, but it initializes the pool to different values for devices
  * that might otherwise be identical and have very little entropy
  * available to them (particularly common in the embedded world).
- *
- * add_input_randomness() uses the input layer interrupt timing, as well as
- * the event type information from the hardware.
  *
  * add_interrupt_randomness() uses the interrupt timing as random
  * inputs to the entropy pool. Using the cycle counters and the irq source
@@ -1166,22 +1161,6 @@ static void add_timer_randomness(struct timer_rand_state *state, unsigned num)
 	}
 	preempt_enable();
 }
-
-void add_input_randomness(unsigned int type, unsigned int code,
-				 unsigned int value)
-{
-	static unsigned char last_value;
-
-	/* ignore autorepeat and the like */
-	if (value == last_value)
-		return;
-
-	last_value = value;
-	add_timer_randomness(&input_timer_state,
-			     (type << 4) ^ code ^ (code >> 4) ^ value);
-	trace_add_input_randomness(ENTROPY_BITS(&input_pool));
-}
-EXPORT_SYMBOL_GPL(add_input_randomness);
 
 static DEFINE_PER_CPU(struct fast_pool, irq_randomness);
 

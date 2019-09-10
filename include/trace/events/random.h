@@ -129,22 +129,6 @@ TRACE_EVENT(debit_entropy,
 		  __entry->debit_bits)
 );
 
-TRACE_EVENT(add_input_randomness,
-	TP_PROTO(int input_bits),
-
-	TP_ARGS(input_bits),
-
-	TP_STRUCT__entry(
-		__field(	  int,	input_bits		)
-	),
-
-	TP_fast_assign(
-		__entry->input_bits	= input_bits;
-	),
-
-	TP_printk("input_pool_bits %d", __entry->input_bits)
-);
-
 TRACE_EVENT(add_disk_randomness,
 	TP_PROTO(dev_t dev, int input_bits),
 
