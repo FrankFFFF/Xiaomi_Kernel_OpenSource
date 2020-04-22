@@ -126,9 +126,10 @@ static int clk_branch_toggle(struct clk_hw *hw, bool en,
 		clk_disable_regmap(hw);
 	}
 
-	/* Make sure enable/disable request goes through before waiting
-	* for CLK_OFF status to get updated.
-	*/
+	/*
+	 * Make sure enable/disable request goes through before waiting
+	 * for CLK_OFF status to get updated.
+	 */
 	mb();
 
 	return clk_branch_wait(br, en, check_halt);

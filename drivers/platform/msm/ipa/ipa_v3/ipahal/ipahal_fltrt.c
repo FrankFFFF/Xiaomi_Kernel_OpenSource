@@ -3607,6 +3607,7 @@ static int ipa_fltrt_alloc_init_tbl_hdr(
 	u64 addr;
 	int i;
 	struct ipahal_fltrt_obj *obj;
+	gfp_t flag = GFP_KERNEL;
 
 	obj = &ipahal_fltrt_objs[ipahal_ctx->hw_type];
 
@@ -3616,10 +3617,15 @@ static int ipa_fltrt_alloc_init_tbl_hdr(
 	}
 
 	params->nhash_hdr.size = params->tbls_num * obj->tbl_hdr_width;
+alloc:
 	params->nhash_hdr.base = dma_alloc_coherent(ipahal_ctx->ipa_pdev,
 		params->nhash_hdr.size,
-		&params->nhash_hdr.phys_base, GFP_KERNEL);
+		&params->nhash_hdr.phys_base, flag);
 	if (!params->nhash_hdr.base) {
+		if (flag == GFP_KERNEL) {
+			flag = GFP_ATOMIC;
+			goto alloc;
+		}
 		IPAHAL_ERR_RL("fail to alloc DMA buff of size %d\n",
 			params->nhash_hdr.size);
 		goto nhash_alloc_fail;
@@ -3667,6 +3673,7 @@ static int ipa_fltrt_alloc_lcl_bdy(
 	struct ipahal_fltrt_alloc_imgs_params *params)
 {
 	struct ipahal_fltrt_obj *obj;
+	gfp_t flag = GFP_KERNEL;
 
 	obj = &ipahal_fltrt_objs[ipahal_ctx->hw_type];
 
@@ -3699,10 +3706,15 @@ static int ipa_fltrt_alloc_lcl_bdy(
 		IPAHAL_DBG_LOW("nhash lcl tbl bdy total h/w size = %u\n",
 			params->nhash_bdy.size);
 
+alloc1:
 		params->nhash_bdy.base = dma_alloc_coherent(
 			ipahal_ctx->ipa_pdev, params->nhash_bdy.size,
-			&params->nhash_bdy.phys_base, GFP_KERNEL);
+			&params->nhash_bdy.phys_base, flag);
 		if (!params->nhash_bdy.base) {
+			if (flag == GFP_KERNEL) {
+				flag = GFP_ATOMIC;
+				goto alloc1;
+			}
 			IPAHAL_ERR("fail to alloc DMA buff of size %d\n",
 				params->nhash_bdy.size);
 			return -ENOMEM;
@@ -3730,10 +3742,15 @@ static int ipa_fltrt_alloc_lcl_bdy(
 		IPAHAL_DBG_LOW("hash lcl tbl bdy total h/w size = %u\n",
 			params->hash_bdy.size);
 
+alloc2:
 		params->hash_bdy.base = dma_alloc_coherent(
 			ipahal_ctx->ipa_pdev, params->hash_bdy.size,
-			&params->hash_bdy.phys_base, GFP_KERNEL);
+			&params->hash_bdy.phys_base, flag);
 		if (!params->hash_bdy.base) {
+			if (flag == GFP_KERNEL) {
+				flag = GFP_ATOMIC;
+				goto alloc2;
+			}
 			IPAHAL_ERR("fail to alloc DMA buff of size %d\n",
 				params->hash_bdy.size);
 			goto hash_bdy_fail;

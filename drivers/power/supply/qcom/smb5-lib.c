@@ -4629,7 +4629,7 @@ static void smblib_eval_chg_termination(struct smb_charger *chg, u8 batt_status)
 	int rc = 0;
 
 	rc = smblib_get_prop_from_bms(chg,
-			POWER_SUPPLY_PROP_REAL_CAPACITY, &pval);
+				POWER_SUPPLY_PROP_REAL_CAPACITY, &pval);
 	if (rc < 0) {
 		smblib_err(chg, "Couldn't read SOC value, rc=%d\n", rc);
 		return;
@@ -6594,9 +6594,8 @@ static void smblib_chg_termination_work(struct work_struct *work)
 	if ((rc < 0) || !input_present)
 		goto out;
 
-
 	rc = smblib_get_prop_from_bms(chg,
-			POWER_SUPPLY_PROP_REAL_CAPACITY, &pval);
+				POWER_SUPPLY_PROP_REAL_CAPACITY, &pval);
 	if ((rc < 0) || (pval.intval < 100)) {
 		vote(chg->usb_icl_votable, CHG_TERMINATION_VOTER, false, 0);
 		goto out;
@@ -6629,6 +6628,18 @@ static void smblib_chg_termination_work(struct work_struct *work)
 	}
 
 	 /* In BSM a sudden jump in CC_SOC is not expected. If seen, its a
+	 * good_ocv or updated capacity, reject it.
+	 */
+	if (chg->last_cc_soc && pval.intval > (chg->last_cc_soc + 100)) {
+		/* CC_SOC has increased by 1% from last time */
+		chg->cc_soc_ref = pval.intval;
+		smblib_dbg(chg, PR_MISC, "cc_soc jumped(%d->%d), reset cc_soc_ref\n",
+				chg->last_cc_soc, pval.intval);
+	}
+	chg->last_cc_soc = pval.intval;
+
+	/*
+	 * In BSM a sudden jump in CC_SOC is not expected. If seen, its a
 	 * good_ocv or updated capacity, reject it.
 	 */
 	if (chg->last_cc_soc && pval.intval > (chg->last_cc_soc + 100)) {

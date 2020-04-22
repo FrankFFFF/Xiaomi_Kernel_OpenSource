@@ -618,7 +618,11 @@ static void qrtr_node_assign(struct qrtr_node *node, unsigned int nid)
 	if (!node->ilc) {
 		node->ilc = ipc_log_context_create(QRTR_LOG_PAGE_CNT, name, 0);
 	}
-	if (!node->ws)
+	/* create wakeup source for only  NID = 0.
+	 * From other nodes sensor service stream samples
+	 * cause APPS suspend problems and power drain issue.
+	 */
+	if (!node->ws && nid == 0)
 		node->ws = wakeup_source_register(name);
 }
 
@@ -690,12 +694,12 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
 
 	skb = netdev_alloc_skb(NULL, len);
 	if (!skb) {
-        skb = alloc_skb_with_frags(0, len, 0, &err, GFP_ATOMIC);
-	        if (!skb) {
-	                pr_err("%s memory allocation failed\n", __func__);
-	                return -ENOMEM;
-	        }
-        frag = true;
+		skb = alloc_skb_with_frags(0, len, 0, &err, GFP_ATOMIC);
+		if (!skb) {
+			pr_err("%s memory allocation failed\n", __func__);
+			return -ENOMEM;
+		}
+		frag = true;
 	}
 
 	cb = (struct qrtr_cb *)skb->cb;
@@ -753,14 +757,12 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
 	__pm_wakeup_event(node->ws, 0);
 
 	if (frag) {
-
-		 skb->data_len = size;
-		 skb->len = size;
-		 skb_store_bits(skb, 0, data + hdrlen, size);
-	 } else {
-		 skb_put_data(skb, data + hdrlen, size);
-	 }
-
+		skb->data_len = size;
+		skb->len = size;
+		skb_store_bits(skb, 0, data + hdrlen, size);
+	} else {
+		skb_put_data(skb, data + hdrlen, size);
+	}
 	qrtr_log_rx_msg(node, skb);
 
 	skb_queue_tail(&node->rx_queue, skb);
@@ -916,10 +918,10 @@ static void qrtr_node_rx_work(struct kthread_work *work)
 				kfree_skb(skb);
 			} else {
 				if (sock_queue_rcv_skb(&ipc->sk, skb)) {
-	                                pr_err("%s qrtr pkt dropped flow[%d]\n",
-	                                      __func__, cb->confirm_rx);
-	                                kfree_skb(skb);
-                        }
+					pr_err("%s qrtr pkt dropped flow[%d]\n",
+					       __func__, cb->confirm_rx);
+					kfree_skb(skb);
+				}
 
 				qrtr_port_put(ipc);
 			}

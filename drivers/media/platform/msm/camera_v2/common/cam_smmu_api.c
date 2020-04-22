@@ -1037,9 +1037,6 @@ static int cam_smmu_map_buffer_and_add_to_list(int idx, int ion_fd,
 		goto err_put;
 	}
 
-	/* cache flush/invalidation is done by buffer provider */
-	attach->dma_map_attrs |= DMA_ATTR_SKIP_CPU_SYNC;
-
 	table = dma_buf_map_attachment(attach, dma_dir);
 	if (IS_ERR_OR_NULL(table)) {
 		rc = PTR_ERR(table);
@@ -1128,12 +1125,6 @@ static int cam_smmu_unmap_buf_and_remove_from_list(
 			(void *)mapping_info->attach);
 		return -EINVAL;
 	}
-
-	/* skip cache operations */
-	mapping_info->attach->dma_map_attrs |= DMA_ATTR_SKIP_CPU_SYNC;
-		trace_printk("Removing buffer: ion_fd = %d paddr = %p len = %u\n",
-			mapping_info->ion_fd,  mapping_info->paddr,
-			mapping_info->len);
 
 	/* iommu buffer clean up */
 	dma_buf_unmap_attachment(mapping_info->attach,

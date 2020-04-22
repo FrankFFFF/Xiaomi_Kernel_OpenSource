@@ -318,7 +318,6 @@ int qmi_txn_init(struct qmi_handle *qmi, struct qmi_txn *txn,
 
 	memset(txn, 0, sizeof(*txn));
 
-	mutex_init(&txn->lock);
 	init_completion(&txn->completion);
 	txn->qmi = qmi;
 	txn->ei = ei;
@@ -354,17 +353,12 @@ int qmi_txn_wait(struct qmi_txn *txn, unsigned long timeout)
 
 	ret = wait_for_completion_timeout(&txn->completion, timeout);
 
-	mutex_lock(&txn->lock);
 	if (txn->result == -ENETRESET) {
-		mutex_unlock(&txn->lock);
 		return txn->result;
 	}
-	mutex_unlock(&txn->lock);
 
 	mutex_lock(&qmi->txn_lock);
-	mutex_lock(&txn->lock);
 	idr_remove(&qmi->txns, txn->id);
-	mutex_unlock(&txn->lock);
 	mutex_unlock(&qmi->txn_lock);
 
 	if (ret == 0)
@@ -383,9 +377,7 @@ void qmi_txn_cancel(struct qmi_txn *txn)
 	struct qmi_handle *qmi = txn->qmi;
 
 	mutex_lock(&qmi->txn_lock);
-	mutex_lock(&txn->lock);
 	idr_remove(&qmi->txns, txn->id);
-	mutex_unlock(&txn->lock);
 	mutex_unlock(&qmi->txn_lock);
 }
 EXPORT_SYMBOL(qmi_txn_cancel);
@@ -720,11 +712,9 @@ void qmi_handle_release(struct qmi_handle *qmi)
 
 	mutex_lock(&qmi->txn_lock);
 	idr_for_each_entry(&qmi->txns, txn, txn_id) {
-		mutex_lock(&txn->lock);
 		idr_remove(&qmi->txns, txn->id);
 		txn->result = -ENETRESET;
 		complete(&txn->completion);
-		mutex_unlock(&txn->lock);
 	}
 	mutex_unlock(&qmi->txn_lock);
 	idr_destroy(&qmi->txns);

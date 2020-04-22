@@ -1112,7 +1112,7 @@
 
 			config {
 				pins = "gpio106";
-				drive-strength = <8>;
+				drive-strength = <10>;
 				bias-bus-hold;
 			};
 		};
@@ -1138,7 +1138,7 @@
 
 			config {
 				pins = "gpio107";
-				drive-strength = <8>;
+				drive-strength = <10>;
 				bias-bus-hold;
 			};
 		};
@@ -1164,7 +1164,7 @@
 
 			config {
 				pins = "gpio108";
-				drive-strength = <8>;
+				drive-strength = <10>;
 				bias-bus-hold;
 			};
 		};
@@ -1190,7 +1190,7 @@
 
 			config {
 				pins = "gpio110";
-				drive-strength = <8>;
+				drive-strength = <10>;
 				bias-bus-hold;
 			};
 		};
@@ -1216,7 +1216,7 @@
 
 			config {
 				pins = "gpio111", "gpio112";
-				drive-strength = <8>;
+				drive-strength = <10>;
 				bias-bus-hold;
 			};
 		};
