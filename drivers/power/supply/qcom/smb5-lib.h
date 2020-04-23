@@ -529,7 +529,6 @@ struct smb_charger {
 	int			aicl_cont_threshold_mv;
 	int			default_aicl_cont_threshold_mv;
 	bool			aicl_max_reached;
-	int			last_cc_soc;
 	int			charge_full_cc;
 	int			cc_soc_ref;
 	int			last_cc_soc;
