@@ -33,6 +33,7 @@
 *.order
 *.patch
 *.s
+*.sh
 *.so
 *.so.dbg
 *.su
@@ -125,3 +126,6 @@ all.config
 
 # fetched Android config fragments
 kernel/configs/android-*.cfg
+
+/output/
+/zip/
