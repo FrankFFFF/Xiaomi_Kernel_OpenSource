@@ -4544,6 +4544,7 @@ void msm_isp_process_axi_irq_stream(struct vfe_device *vfe_dev,
 	int vfe_idx;
 	struct vfe_device *temp_dev;
 	int other_vfe_id;
+	uint32_t current_pipo_bit = 0;
 
 	if (!ts) {
 		pr_err("%s: Error! Invalid argument\n", __func__);
