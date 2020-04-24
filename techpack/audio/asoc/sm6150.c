@@ -5909,10 +5909,10 @@ static int msm_mi2s_snd_startup(struct snd_pcm_substream *substream)
 		if (pdata->mi2s_gpio_p[index])
 			msm_cdc_pinctrl_select_active_state(
 					pdata->mi2s_gpio_p[index]);
-		/*bug 497075,wangchengqiang,20191031,add for audio bringup*/
 
+		/*bug 497075,wangchengqiang,20191031,add for audio bringup*/
 		if (index == SEC_MI2S)
-		msm_cdc_pinctrl_select_active_state(pdata->sec_mi2s_gpio_p);
+			msm_cdc_pinctrl_select_active_state(pdata->sec_mi2s_gpio_p);
 	}
 clk_off:
 	if (ret < 0)
@@ -5968,9 +5968,10 @@ static void msm_mi2s_snd_shutdown(struct snd_pcm_substream *substream)
 					__func__, index, ret);
 			mi2s_mclk[index].enable = 0;
 		}
-			/*bug 497075,wangchengqiang,20191031,add for audio bringup*/
-	if (index == SEC_MI2S)
-		msm_cdc_pinctrl_select_sleep_state(pdata->sec_mi2s_gpio_p);
+
+		/*bug 497075,wangchengqiang,20191031,add for audio bringup*/
+		if (index == SEC_MI2S)
+			msm_cdc_pinctrl_select_sleep_state(pdata->sec_mi2s_gpio_p);
 	}
 	mutex_unlock(&mi2s_intf_conf[index].lock);
 }
@@ -7659,8 +7660,6 @@ static struct snd_soc_dai_link msm_mi2s_be_dai_links[] = {
 	},
 #endif
 /*bug 497075,wangchengqiang,20191031,add for audio bringup*/
-
-
 	{
 		.name = LPASS_BE_TERT_MI2S_RX,
 		.stream_name = "Tertiary MI2S Playback",
@@ -9220,8 +9219,8 @@ static int msm_asoc_machine_probe(struct platform_device *pdev)
 		dev_dbg(&pdev->dev, "property %s not detected in node %s",
 			"qcom,hph-en0-gpio", pdev->dev.of_node->full_name);
 	}
-	/*bug 497075,wangchengqiang,20191031,add for audio bringup*/
 
+	/*bug 497075,wangchengqiang,20191031,add for audio bringup*/
 	pdata->sec_mi2s_gpio_p = of_parse_phandle(pdev->dev.of_node,
 					"qcom,sec-mi2s-gpios", 0);
 
