@@ -128,6 +128,10 @@ ifeq ($(cc-name),clang)
 KBUILD_CFLAGS += $(call cc-disable-warning, asm-operand-widths)
 endif
 
+ifeq ($(CONFIG_ARCH_TRINKET),y)
+KBUILD_CFLAGS += -mcpu=cortex-a73+crc+crypto
+endif
+
 # KASAN_SHADOW_OFFSET = VA_START + (1 << (VA_BITS - 3)) - (1 << 61)
 # in 32-bit arithmetic
 KASAN_SHADOW_OFFSET := $(shell printf "0x%08x00000000\n" $$(( \
