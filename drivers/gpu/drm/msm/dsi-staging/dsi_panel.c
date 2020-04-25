@@ -3275,7 +3275,7 @@ int dsi_panel_parse_white_reg_read_configs(struct dsi_panel *panel)
 
 
 
-static bool ufshcd_get_hwlevel()
+static bool ufshcd_get_hwlevel(void)
 {
 	char *dr_mr = NULL;
 	char hwlevel[16]= {0};
