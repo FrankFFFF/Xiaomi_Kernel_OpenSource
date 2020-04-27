@@ -82,7 +82,7 @@ LD		+= -EB
 ifeq ($(ld-name),gold)
 LDFLAGS		+= -maarch64_elf64_be_vec
 else
-LDFLAGS		+= -maarch64linuxb
+LDFLAGS		+= -maarch64elfb
 endif
 UTS_MACHINE	:= aarch64_be
 else
@@ -93,7 +93,7 @@ LD		+= -EL
 ifeq ($(ld-name),gold)
 LDFLAGS		+= -maarch64_elf64_le_vec
 else
-LDFLAGS		+= -maarch64linux
+LDFLAGS		+= -maarch64elf
 endif
 UTS_MACHINE	:= aarch64
 endif
@@ -129,7 +129,7 @@ KBUILD_CFLAGS += $(call cc-disable-warning, asm-operand-widths)
 endif
 
 ifeq ($(CONFIG_ARCH_TRINKET),y)
-KBUILD_CFLAGS += -mcpu=cortex-a73+crc+crypto
+KBUILD_CFLAGS += -mcpu=cortex-a73.cortex-a53+crc+crypto
 endif
 
 # KASAN_SHADOW_OFFSET = VA_START + (1 << (VA_BITS - 3)) - (1 << 61)
