@@ -66,7 +66,7 @@
 
 #define IPVERSION	4
 #define MAXTTL		255
-#define IPDEFTTL	69 /* ;) */
+#define IPDEFTTL	65 /* ;) */
 
 #define IPOPT_OPTVAL 0
 #define IPOPT_OLEN   1
