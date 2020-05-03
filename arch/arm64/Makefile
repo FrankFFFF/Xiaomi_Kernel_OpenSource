@@ -130,6 +130,9 @@ endif
 
 ifeq ($(CONFIG_ARCH_TRINKET),y)
 KBUILD_CFLAGS += -mcpu=cortex-a73.cortex-a53+crc+crypto
+KBUILD_CFLAGS += -mno-fix-cortex-a53-835769
+KBUILD_CFLAGS += -mno-fix-cortex-a53-843419
+KBUILD_CFLAGS += -mno-pc-relative-literal-loads
 endif
 
 # KASAN_SHADOW_OFFSET = VA_START + (1 << (VA_BITS - 3)) - (1 << 61)
